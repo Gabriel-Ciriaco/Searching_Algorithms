@@ -1,39 +1,44 @@
-def dls(start, end, visited, cur_l=0, l=0):
-    if start == end:
-        return True
+from node import Node
 
-    if start in visited or cur_l >= l:
-        return False
+def dls(start: Node, end: Node, l=0) -> dict:
+    stack = [(start, [start.name], 0, 0)]
 
-    
-    visited.add(start)
+    visited = set()
 
-    for n in start.neighbours:
-        if dls(n, end, visited, cur_l + 1, l):
-            return True
+    any_cutoff = False
 
-    # Allows to explor shorter paths in other ramifications    
-    visited.remove(start)
+    while stack:
+        cur_node, path, cost, cur_l = stack.pop()
 
-    return False
+        if cur_node == end:
+            return {
+                "success":True,
+                "path": path,
+                "cost": cost,
+                "cutoff": False,
+                "expanded_nodes": len(visited)
+            }
 
-if __name__ ==  "__main__":
-    from node import Node
+        # If we reached the limite, mark as cutoff and continue
+        if cur_l >= l:
+            any_cutoff = True
+            continue
 
-    # Grafo em linha: A -> B -> C
-    node_a = Node("A")
-    node_b = Node("B")
-    node_c = Node("C")
-    
-    node_a.neighbours = [node_b]
-    node_b.neighbours = [node_c]
+        visited.add(cur_node)
 
-    # --- Caso 1: Destino dentro do limite (Limite = 2, C está no nível 2) ---
-    v1 = set()
-    res1 = dls(node_a, node_c, v1, cur_l=0, l=2)
-    print(f"Caso 1 (Limite suficiente): Esperado: True | Obtido: {res1}")
+        for neighbour, edge_cost in cur_node.neighbours[::-1]:
+            if neighbour not in visited:
+                stack.append((
+                    neighbour,
+                    path + [neighbour.name],
+                    cost + edge_cost,
+                    cur_l + 1
+                ))
 
-    # --- Caso 2: Destino fora do limite (Limite = 1, C está no nível 2) ---
-    v2 = set()
-    res2 = dls(node_a, node_c, v2, cur_l=0, l=1)
-    print(f"Caso 2 (Limite curto): Esperado: False | Obtido: {res2}")
+    return {
+        "success": False,
+        "path": None,
+        "cost": float("inf"),
+        "cutoff": any_cutoff,
+        "expanded_nodes": len(visited)
+    }

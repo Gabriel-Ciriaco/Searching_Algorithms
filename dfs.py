@@ -1,49 +1,36 @@
 from node import Node
 
-def dfs(start, end):
-    if start in visited:
-        return False
+def dfs(start: Node, end: Node) -> dict:
+    # We are going to use a stack to avoid stackoverflow of
+    # the traditional recursive way
+    stack = [(start, [start.name], 0)]
 
-    if start == end:
-        return True
+    visited = set()
 
-    visited.add(start)
+    while stack:
+        cur_node, path, cost = stack.pop()
 
-    for n in start.neighbours:
-        if dfs(n, end, visited):
-            return True
+        if cur_node in visited:
+            continue
+
+        visited.add(cur_node)
+
+        if cur_node == end:
+            return {
+                "success": True,
+                "path": path,
+                "cost": cost,
+                "expanded_nodes": len(visited)
+            }
+
+        # We reverse the neighbours to get the LIFO behavior of the stack
+        for neighbour, edge_cost in cur_node.neighbours[::-1]:
+            if neighbour not in visited:
+                stack.append((neighbour, path + [neighbour.name], cost + edge_cost))
     
-    return False
-
-
-if __name__ ==  "__main__":
- # --- Configuração dos Nós ---
-    node_a = Node("A", cost=1)
-    node_b = Node("B", cost=2)
-    node_c = Node("C", cost=3)
-    node_d = Node("D", cost=4) # Nó isolado
-
-    # Criando as conexões (Grafos)
-    node_a.neighbours = [node_b]
-    node_b.neighbours = [node_c] # Caminho linear: A -> B -> C
-
-    # --- Caso 1: Caminho Direto Existente (A até C) ---
-    visited1 = set()
-    res1 = dfs(node_a, node_c, visited1)
-    print(f"Caso 1 (Caminho A -> C): Esperado: True | Obtido: {res1}")
-
-    # --- Caso 2: Destino Inalcançável (A até D) ---
-    visited2 = set()
-    res2 = dfs(node_a, node_d, visited2)
-    print(f"Caso 2 (Caminho A -> D): Esperado: False | Obtido: {res2}")
-
-    # --- Caso 3: Grafo com Ciclo (A -> B -> A) ---
-    node_b.neighbours = [node_c, node_a] # B agora aponta de volta para A
-    visited3 = set()
-    res3 = dfs(node_a, node_c, visited3)
-    print(f"Caso 3 (Ciclo A -> B -> A): Esperado: True | Obtido: {res3}")
-
-    # --- Caso 4: Início já é o Destino (A até A) ---
-    visited4 = set()
-    res4 = dfs(node_a, node_a, visited4)
-    print(f"Caso 4 (Início == Fim): Esperado: True | Obtido: {res4}")
+    return {
+        "success": False,
+        "path": None,
+        "cost": float("inf"),
+        "expanded_nodes": len(visited)
+    }
