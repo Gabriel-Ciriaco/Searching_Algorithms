@@ -54,11 +54,25 @@ print(result)
 {
   'success': True,
   'path': ['Presidente Prudente', 'Marília', 'Bauru'],
-  'cost': 283.0,
-  'expanded_nodes': 4
+  'cost': 283,
+  'expanded_nodes': 3
 }
 */
 ```
+
+#### 3. Running the Tests
+The `tests/` folder contains an automated validation suite written with `pytest`:
+
+```bash
+pip install pytest networkx matplotlib
+python -m pytest
+```
+
+* **Algorithms**: result format, start equal to destination, unreachable goals and paths that only exist in one direction.
+* **Correctness**: BFS and IDS are compared with the minimum number of hops, and UCS and A* with the minimum cost, against an exhaustive enumeration of every simple path on random graphs.
+* **DLS and IDS**: cutoff vs. failure, depth limit, early stop of IDS and paths first reached by a deeper branch.
+* **UNESP Network**: bidirectional roads, admissible and consistent heuristic for every pair of cities, A* equal to UCS, unreachable Ilha Solteira and the benchmark table of this README.
+* **Dashboard**: headless execution (`Agg` backend) of every button, the benchmark mode and the DLS step controls.
 
 ---
 
@@ -106,6 +120,12 @@ print(result)
 ├── ids.py                      # Iterative Deepening Search
 ├── greedy_best_first_search.py # Greedy Best-First Search
 ├── a_star.py                   # A* Search
+├── tests/                      # Automated validation suite (pytest)
+│   ├── conftest.py             # Shared fixtures and headless backend
+│   ├── test_node.py            # Node class
+│   ├── test_search_algorithms.py # The 7 search algorithms
+│   ├── test_unesp_network.py   # UNESP road network and README benchmark
+│   └── test_app.py             # Interactive dashboard
 ├── AI_REPORT.md                # AI Transparency & Methodology Report (English)
 └── RELATORIO_IA.md             # Relatório de Transparência e Metodologia de IA (Português)
 ```
