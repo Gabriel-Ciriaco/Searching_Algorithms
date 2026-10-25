@@ -16,8 +16,8 @@ def build_network():
     # City coordinates in SP state (approximate km)
     cidades = {
         "Presidente Prudente": Node("Presidente Prudente", x=0, y=50),
-        "Assis": Node("Assis", x=125, y=30),
-        "Marília": Node("Marília", x=160, y=90),
+        "Assis": Node("Assis", x=124, y=30),
+        "Marília": Node("Marília", x=162, y=90),
         "Ourinhos": Node("Ourinhos", x=190, y=10),
         "Bauru": Node("Bauru", x=265, y=70),
         "Botucatu": Node("Botucatu", x=340, y=40),
