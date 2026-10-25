@@ -3,7 +3,7 @@ from node import Node
 def dls(start: Node, end: Node, l=0) -> dict:
     stack = [(start, [start.name], 0, 0)]
 
-    visited = set()
+    expanded_nodes = 0
 
     any_cutoff = False
 
@@ -16,7 +16,7 @@ def dls(start: Node, end: Node, l=0) -> dict:
                 "path": path,
                 "cost": cost,
                 "cutoff": False,
-                "expanded_nodes": len(visited)
+                "expanded_nodes": expanded_nodes
             }
 
         # If we reached the limite, mark as cutoff and continue
@@ -24,10 +24,13 @@ def dls(start: Node, end: Node, l=0) -> dict:
             any_cutoff = True
             continue
 
-        visited.add(cur_node)
+        expanded_nodes += 1
 
+        # Cycle control by the path history. A global visited set would
+        # block a node already reached by a deeper branch from being
+        # reached again by a shallower one, losing paths inside the limit
         for neighbour, edge_cost in cur_node.neighbours[::-1]:
-            if neighbour not in visited:
+            if neighbour.name not in path:
                 stack.append((
                     neighbour,
                     path + [neighbour.name],
@@ -40,5 +43,5 @@ def dls(start: Node, end: Node, l=0) -> dict:
         "path": None,
         "cost": float("inf"),
         "cutoff": any_cutoff,
-        "expanded_nodes": len(visited)
+        "expanded_nodes": expanded_nodes
     }
